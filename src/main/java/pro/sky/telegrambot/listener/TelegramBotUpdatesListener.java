@@ -82,7 +82,7 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
         List<NotificationTask> tasks = notificationTaskService.findByDateTime(
                 LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES)
         );
-        tasks.forEach(t-> sendMessage(t.getChatId(), "❗Напоминание: " + t.reminderInfo()));
+        tasks.forEach(t-> sendMessage(t.getChatId(), "Напоминание: " + t.reminderInfo()));
     }
 
 }
