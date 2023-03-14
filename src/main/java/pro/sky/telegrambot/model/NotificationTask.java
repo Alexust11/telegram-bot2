@@ -8,17 +8,23 @@ import java.util.Objects;
 public class NotificationTask {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
-
+    private long id;
+    @Column(name = "chat_id", nullable = false)
     private long chatId;
     private String text;
-    @Column(name = "date_time")
+    @Column(name = "date_time", nullable = false)
     private LocalDateTime scheduledTime;
 
     public NotificationTask() {
     }
 
-    public int getId() {
+    public NotificationTask(long chatId, String text, LocalDateTime scheduledTime) {
+        this.chatId = chatId;
+        this.text = text;
+        this.scheduledTime = scheduledTime;
+    }
+
+    public long getId() {
         return id;
     }
 
@@ -67,5 +73,9 @@ public class NotificationTask {
                 ", text='" + text + '\'' +
                 ", scheduledTime=" + scheduledTime +
                 '}';
+    }
+
+    public String reminderInfo() {
+        return this.getScheduledTime() + " - " + this.getText();
     }
 }
