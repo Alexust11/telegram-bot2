@@ -24,13 +24,10 @@ public class NotificationTaskService {
         return notificationTaskRepository.findAllByScheduledTimeBetween(from, to);
     }
 
-    public void addTask(long chatId, String dateTime, String taskDescription) {
-        LocalDateTime localDateTime = LocalDateTime.parse(dateTime, DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm"));
-        addTask(new NotificationTask(chatId, taskDescription, localDateTime));
+    public void addTask(NotificationTask task) {
+               notificationTaskRepository.save(task);
     }
 
-    public void addTask (NotificationTask task){
-        notificationTaskRepository.save(task);
-    }
+
 
 }

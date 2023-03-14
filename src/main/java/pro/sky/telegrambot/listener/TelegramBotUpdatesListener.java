@@ -14,10 +14,12 @@ import pro.sky.telegrambot.service.NotificationTaskService;
 
 import javax.annotation.PostConstruct;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
-
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 @Service
@@ -25,7 +27,8 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
 
     private final NotificationTaskService notificationTaskService;
     private final Logger logger;
-
+    private final Pattern pattern = Pattern.compile("([0-9.:\\s]{16})(\\s)([\\W+]+)");
+    private final DateTimeFormatter formatterPattern = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
     @Autowired
     private TelegramBot telegramBot;
 
@@ -43,24 +46,17 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
     public int process(List<Update> updates) {
         updates.forEach(update -> {
             logger.info("Processing update: {}", update);
+
+
             if (update.message().text() != null){
                 String message = update.message().text();
                 long chatId = update.message().chat().id();
-                final String regexForNewTask = "([\\d.:\s]{16})(\s)([\\W\\d+]+)";
-
                 if (message.equals("/start")) {
                     String username = update.message().chat().firstName();
                     sendMessage(chatId, "Привет, " + username + "!");
-                } else if (message.matches(regexForNewTask)){
-                    String dateTime = message.substring(0, 16);
-                    String taskDescription = message.substring(17);
-                    try {
-                        addTask(chatId, dateTime, taskDescription);
-                        sendMessage(chatId, "Задача добавлена");
-                    } catch (DateTimeParseException e) {
-                        e.printStackTrace();
-                        sendMessage(chatId, "Некорректный форматы даты/времени. Дата должна быть в формате:\n 01.01.2022 20:00");
-                    }
+                } else if (message.matches("([\\d.:\s]{16})(\s)([\\W\\d+]+)")){
+                    createNewTask(update);
+
                 } else {
                     sendMessage(chatId, "Команда не распознана ");
                 }
@@ -69,13 +65,35 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
         return UpdatesListener.CONFIRMED_UPDATES_ALL;
     }
 
-    private void sendMessage(long chatId, String s) {
+    private void createNewTask(Update update) {
+        String inputMessage = update.message().text();
+        Matcher matcher = pattern.matcher(inputMessage);
+
+        if (matcher.matches()) {
+            long chatId = update.message().chat().id();
+            String date = matcher.group(1);
+            LocalDateTime formattedDate = LocalDateTime.parse(date, formatterPattern);
+            String textTask = matcher.group(3);
+
+            try {
+                NotificationTask newTask = new NotificationTask(chatId, textTask, formattedDate);
+                notificationTaskService.addTask(newTask);
+                sendMessage(chatId, "Задача добавлена");
+            } catch (DateTimeParseException e)
+             { e.printStackTrace();
+                 sendMessage(chatId, "Некорректный форматы даты/времени. Дата должна быть в формате:\n 01.01.2022 20:00");
+            }
+
+
+        }
+
+    }
+
+       private void sendMessage(long chatId, String s) {
         telegramBot.execute(new SendMessage(chatId, s));
     }
 
-    private void addTask(long chatId, String dateTime, String taskDescription){
-        notificationTaskService.addTask(chatId, dateTime, taskDescription);
-    }
+
 
     @Scheduled(cron = "0 0/1 * * * *")
     public void sendActualNotifications(){
