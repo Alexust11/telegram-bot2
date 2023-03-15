@@ -54,7 +54,7 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
                 if (message.equals("/start")) {
                     String username = update.message().chat().firstName();
                     sendMessage(chatId, "Привет, " + username + "!");
-                } else if (message.matches("([\\d.:\s]{16})(\s)([\\W\\d+]+)")){
+                } else if (message.matches("([0-9\\.\\:\\s]{16})(\\s)([\\W+]+)")){
                     createNewTask(update);
 
                 } else {

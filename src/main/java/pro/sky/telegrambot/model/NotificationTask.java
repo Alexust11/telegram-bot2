@@ -1,11 +1,18 @@
 package pro.sky.telegrambot.model;
 
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.Setter;
+
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Entity
+@Getter
+@Setter
 public class NotificationTask {
+    @Setter(AccessLevel.PROTECTED)
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
@@ -22,35 +29,36 @@ public class NotificationTask {
         this.chatId = chatId;
         this.text = text;
         this.scheduledTime = scheduledTime;
+
     }
 
-    public long getId() {
-        return id;
-    }
-
-      public long getChatId() {
-        return chatId;
-    }
-
-    public void setChatId(long chatId) {
-        this.chatId = chatId;
-    }
-
-    public String getText() {
-        return text;
-    }
-
-    public void setText(String text) {
-        this.text = text;
-    }
-
-    public LocalDateTime getScheduledTime() {
-        return scheduledTime;
-    }
-
-    public void setScheduledTime(LocalDateTime scheduledTime) {
-        this.scheduledTime = scheduledTime;
-    }
+//    public long getId() {
+//        return id;
+//    }
+//
+//      public long getChatId() {
+//        return chatId;
+//    }
+//
+//    public void setChatId(long chatId) {
+//        this.chatId = chatId;
+//    }
+//
+//    public String getText() {
+//        return text;
+//    }
+//
+//    public void setText(String text) {
+//        this.text = text;
+//    }
+//
+//    public LocalDateTime getScheduledTime() {
+//        return scheduledTime;
+//    }
+//
+//    public void setScheduledTime(LocalDateTime scheduledTime) {
+//        this.scheduledTime = scheduledTime;
+//    }
 
     @Override
     public boolean equals(Object o) {
