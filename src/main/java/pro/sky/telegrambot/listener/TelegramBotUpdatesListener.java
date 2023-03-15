@@ -70,12 +70,13 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
         Matcher matcher = pattern.matcher(inputMessage);
 
         if (matcher.matches()) {
-            long chatId = update.message().chat().id();
-            String date = matcher.group(1);
-            LocalDateTime formattedDate = LocalDateTime.parse(date, formatterPattern);
-            String textTask = matcher.group(3);
 
+            long chatId = update.message().chat().id();
+            String textTask = matcher.group(3);
             try {
+
+                String date = matcher.group(1);
+                LocalDateTime formattedDate = LocalDateTime.parse(date, formatterPattern);
                 NotificationTask newTask = new NotificationTask(chatId, textTask, formattedDate);
                 notificationTaskService.addTask(newTask);
                 sendMessage(chatId, "Задача добавлена");
@@ -83,6 +84,8 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
              { e.printStackTrace();
                  sendMessage(chatId, "Некорректный форматы даты/времени. Дата должна быть в формате:\n 01.01.2022 20:00");
             }
+
+
 
 
         }
