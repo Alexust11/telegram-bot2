@@ -63,8 +63,8 @@ public class NotificationTask {
     public String toString() {
         return "NotificationTask{" +
                 "id=" + id +
-                ", chatId=" + chatId +
-                ", text='" + text + '\'' +
+                ", chatId" + chatId +
+                ", text'" + text + '\'' +
                 ", scheduledTime=" + scheduledTime +
                 '}';
     }
